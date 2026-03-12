@@ -51,11 +51,16 @@ jobs:
           cd android
           chmod +x gradlew
           ./gradlew assembleRelease --stacktrace
+          ./gradlew signingReport
         env:
           JAVA_OPTS: "-Xmx4g"
 
-      - name: 📦 Upload APK
-        uses: actions/upload-artifact@v4
+      - name: 🚀 Release APK (Direct Link)
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
         with:
-          name: mitralink-chat-app-apk
-          path: android/app/build/outputs/apk/release/*.apk
+          files: android/app/build/outputs/apk/release/*.apk
+          name: "MitraLink APK Release (${{ github.ref_name }})"
+          body: "Direct APK download for testing. Please copy the SHA-1 from the build logs to your Firebase Console."
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
